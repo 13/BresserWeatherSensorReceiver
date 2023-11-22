@@ -163,8 +163,8 @@
 // ------------------------------------------------------------------------------------------------
 // Select type of receiver module (if not yet defined based on the assumptions above)
 #if ( !defined(USE_CC1101) && !defined(USE_SX1276) )
-    //#define USE_CC1101
-    #define USE_SX1276
+    #define USE_CC1101
+    //#define USE_SX1276
 #endif
 
 

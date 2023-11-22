@@ -110,7 +110,7 @@
 #define LED_EN                  // Enable LED indicating successful data reception
 #define LED_GPIO        2       // LED pin
 #define NUM_SENSORS     1       // Number of sensors to be received
-#define TIMEZONE        1       // UTC + TIMEZONE
+#define TIMEZONE        2       // UTC + TIMEZONE
 #define PAYLOAD_SIZE    255     // maximum MQTT message size
 #define TOPIC_SIZE      60      // maximum MQTT topic size
 #define HOSTNAME_SIZE   30      // maximum hostname size
@@ -122,8 +122,8 @@
 #define WIFI_RETRIES    10      // WiFi connection retries
 #define WIFI_DELAY      1000    // Delay between connection attempts [ms]
 #define SLEEP_EN        true    // enable sleep mode (see notes above!)
-#define USE_SECUREWIFI          // use secure WIFI
-//#define USE_WIFI              // use non-secure WIFI
+//#define USE_SECUREWIFI          // use secure WIFI
+#define USE_WIFI              // use non-secure WIFI
 
 
 // Enable to debug MQTT connection; will generate synthetic sensor data.
@@ -159,7 +159,7 @@ int const num_sensors = 1;
 #include "WeatherUtils.h"
 #include "RainGauge.h"
 
-const char sketch_id[] = "BresserWeatherSensorMQTT 20221024";
+const char sketch_id[] = "BresserWeatherSensorMQTT";
 
 // Map sensor IDs to Names
 SensorMap sensor_map[NUM_SENSORS] = {
@@ -177,14 +177,14 @@ SensorMap sensor_map[NUM_SENSORS] = {
 #include "secrets.h"
 
 #ifndef SECRETS
-    const char ssid[] = "WiFiSSID";
+    const char ssid[] = "muhxnetwork";
     const char pass[] = "WiFiPassword";
 
     #define HOSTNAME "ESPWeather"
-    #define APPEND_CHIP_ID
+    //#define APPEND_CHIP_ID
 
-    #define    MQTT_PORT     8883 // checked by pre-processor!
-    const char MQTT_HOST[] = "xxx.yyy.zzz.com";
+    #define    MQTT_PORT     1883 // checked by pre-processor!
+    const char MQTT_HOST[] = "192.168.22.5";
     const char MQTT_USER[] = ""; // leave blank if no credentials used
     const char MQTT_PASS[] = ""; // leave blank if no credentials used
 
@@ -249,11 +249,13 @@ WeatherSensor weatherSensor;
 RainGauge     rainGauge;
 
 // MQTT topics
+const char MQTT_PUB_TOPIC[]      = "muh/";
 const char MQTT_PUB_STATUS[]      = "/status";
 const char MQTT_PUB_RADIO[]       = "/radio";
 const char MQTT_PUB_DATA[]        = "/data";
 const char MQTT_PUB_EXTRA[]       = "/extra";
 
+char mqttPubTopic[TOPIC_SIZE];
 char mqttPubStatus[TOPIC_SIZE];
 char mqttPubRadio[TOPIC_SIZE];
 char mqttPubData[TOPIC_SIZE];
@@ -555,10 +557,10 @@ void setup() {
         snprintf(&Hostname[strlen(Hostname)], HOSTNAME_SIZE, "-%06X", ESP.getChipId() & 0xFFFFFF);
     #endif
 
-    snprintf(mqttPubStatus, TOPIC_SIZE, "%s%s", Hostname, MQTT_PUB_STATUS);
-    snprintf(mqttPubRadio,  TOPIC_SIZE, "%s%s", Hostname, MQTT_PUB_RADIO);
-    snprintf(mqttPubData,   TOPIC_SIZE, "%s%s", Hostname, MQTT_PUB_DATA);
-    snprintf(mqttPubExtra,  TOPIC_SIZE, "%s%s", Hostname, MQTT_PUB_EXTRA);
+    snprintf(mqttPubStatus, TOPIC_SIZE, "%s%s%s", MQTT_PUB_TOPIC, Hostname, MQTT_PUB_STATUS);
+    snprintf(mqttPubRadio,  TOPIC_SIZE, "%s%s%s", MQTT_PUB_TOPIC, Hostname, MQTT_PUB_RADIO);
+    snprintf(mqttPubData,   TOPIC_SIZE, "%s%s%s", MQTT_PUB_TOPIC, Hostname, MQTT_PUB_DATA);
+    snprintf(mqttPubExtra,  TOPIC_SIZE, "%s%s%s", MQTT_PUB_TOPIC, Hostname, MQTT_PUB_EXTRA);
 
     mqtt_setup();
     weatherSensor.begin();
