@@ -310,7 +310,8 @@ void wifi_wait(int wifi_retries, int wifi_delay)
         delay(wifi_delay);
         if (++count == wifi_retries) {
             Serial.printf("WiFi connection timed out, will restart after %d s\n", SLEEP_INTERVAL/1000);
-            ESP.deepSleep(SLEEP_INTERVAL * 1000);
+            //ESP.deepSleep(SLEEP_INTERVAL * 1000);
+            ESP.restart();
         }
     }
 }
@@ -663,6 +664,5 @@ void loop() {
         #ifdef LED_EN
             pinMode(LED_GPIO, INPUT);
         #endif
-        ESP.deepSleep(SLEEP_INTERVAL * 1000);
     }
 } // loop()
